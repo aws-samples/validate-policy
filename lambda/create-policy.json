@@ -1,0 +1,69 @@
+{
+    "version": "0",
+    "id": "d01b3cf2-1234-1234-1234-788e6f27869b",
+    "detail-type": "AWS API Call via CloudTrail",
+    "source": "aws.iam",
+    "account": "123412341234",
+    "time": "2023-07-11T16: 21: 34Z",
+    "region": "us-east-1",
+    "resources": [],
+    "detail": {
+        "eventVersion": "1.08",
+        "userIdentity": {
+            "type": "AssumedRole",
+            "principalId": "AROAEXAMPLE:leo",
+            "arn": "arn:aws:sts::123412341234:assumed-role/me/leo",
+            "accountId": "123412341234",
+            "accessKeyId": "ASIAEXAMPLE",
+            "sessionContext": {
+                "sessionIssuer": {
+                    "type": "Role",
+                    "principalId": "AROAEXAMPLE",
+                    "arn": "arn:aws:iam::123412341234:role/me",
+                    "accountId": "123412341234",
+                    "userName": "me"
+                },
+                "webIdFederationData": {},
+                "attributes": {
+                    "creationDate": "2023-07-11T14: 14: 08Z",
+                    "mfaAuthenticated": "false"
+                }
+            }
+        },
+        "eventTime": "2023-07-11T16: 21: 34Z",
+        "eventSource": "iam.amazonaws.com",
+        "eventName": "CreatePolicy",
+        "awsRegion": "us-east-1",
+        "sourceIPAddress": "11.22.33.44",
+        "userAgent": "AWS Internal",
+        "requestParameters": {
+            "policyName": "test-validate-policy",
+            "policyDocument": "{\n\t\"Version\": \"2012-10-17\",\n\t\"Statement\": [\n\t\t{\n\t\t\t\"Sid\": \"VisualEditor0\",\n\t\t\t\"Effect\": \"Allow\",\n\t\t\t\"Action\": \"access-analyzer:ValidatePolicy\",\n\t\t\t\"Resource\": \"*\"\n\t\t}\n\t]\n}",
+            "description": "",
+            "tags": []
+        },
+        "responseElements": {
+            "policy": {
+                "policyName": "test-validate-policy",
+                "policyId": "ANPAMXNSGJCS644",
+                "arn": "arn:aws:iam::123412341234:policy/test-validate-policy",
+                "path": "/",
+                "defaultVersionId": "v1",
+                "attachmentCount": 0,
+                "permissionsBoundaryUsageCount": 0,
+                "isAttachable": true,
+                "createDate": "Jul 11,2023 4: 21: 34 PM",
+                "updateDate": "Jul 11,2023 4: 21: 34 PM",
+                "tags": []
+            }
+        },
+        "requestID": "b6e66086-1234-1234-1234-659744f84d2c",
+        "eventID": "be32aa2a-1234-1234-1234-63c8786f53c6",
+        "readOnly": false,
+        "eventType": "AwsApiCall",
+        "managementEvent": true,
+        "recipientAccountId": "123412341234",
+        "eventCategory": "Management",
+        "sessionCredentialFromConsole": "true"
+    }
+}

@@ -1,0 +1,63 @@
+{
+    "version": "0",
+    "id": "15e33848-1234-1234-1234-325f2d211fa9",
+    "detail-type": "AWS API Call via CloudTrail",
+    "source": "aws.iam",
+    "account": "123412341234",
+    "time": "2023-07-11T16:22:36Z",
+    "region": "us-east-1",
+    "resources": [],
+    "detail": {
+        "eventVersion": "1.08",
+        "userIdentity": {
+            "type": "AssumedRole",
+            "principalId": "AROAEXAMPLE:leo",
+            "arn": "arn:aws:sts::123412341234:assumed-role/me/leo",
+            "accountId": "123412341234",
+            "accessKeyId": "ASIAEXAMPLE",
+            "sessionContext": {
+                "sessionIssuer": {
+                    "type": "Role",
+                    "principalId": "AROAEXAMPLE",
+                    "arn": "arn:aws:iam::123412341234:role/me",
+                    "accountId": "123412341234",
+                    "userName": "me"
+                },
+                "webIdFederationData": {},
+                "attributes": {
+                    "creationDate": "2023-07-11T14:14:08Z",
+                    "mfaAuthenticated": "false"
+                }
+            }
+        },
+        "eventTime": "2023-07-11T16:22:36Z",
+        "eventSource": "iam.amazonaws.com",
+        "eventName": "CreateRole",
+        "awsRegion": "us-east-1",
+        "sourceIPAddress": "11.22.33.44",
+        "userAgent": "AWS Internal",
+        "requestParameters": {
+            "roleName": "test-create-role-2",
+            "description": "",
+            "assumeRolePolicyDocument": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"sts:AssumeRole\",\"Principal\":{\"AWS\":\"123412341234\"},\"Condition\":{}}]}"
+        },
+        "responseElements": {
+            "role": {
+                "assumeRolePolicyDocument": "%7B%22Version%22%3A%222012-10-17%22%2C%22Statement%22%3A%5B%7B%22Effect%22%3A%22Allow%22%2C%22Action%22%3A%22sts%3AAssumeRole%22%2C%22Principal%22%3A%7B%22AWS%22%3A%22123412341234%22%7D%2C%22Condition%22%3A%7B%7D%7D%5D%7D",
+                "arn": "arn:aws:iam::123412341234:role/test-create-role-2",
+                "roleId": "AROAXBQSWXZADI",
+                "createDate": "Jul 11, 2023 4:22:36 PM",
+                "roleName": "test-create-role-2",
+                "path": "/"
+            }
+        },
+        "requestID": "f3b440e8-1234-1234-1234-4a9092d13c2d",
+        "eventID": "3f936f4b-1234-1234-1234-35e0f173cfe7",
+        "readOnly": false,
+        "eventType": "AwsApiCall",
+        "managementEvent": true,
+        "recipientAccountId": "123412341234",
+        "eventCategory": "Management",
+        "sessionCredentialFromConsole": "true"
+    }
+}

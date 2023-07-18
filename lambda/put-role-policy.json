@@ -1,0 +1,54 @@
+{
+    "version": "0",
+    "id": "227f01d9-1234-1234-1234-576f50830db4",
+    "detail-type": "AWS API Call via CloudTrail",
+    "source": "aws.iam",
+    "account": "123412341234",
+    "time": "2023-07-11T18:54:08Z",
+    "region": "us-east-1",
+    "resources": [],
+    "detail": {
+        "eventVersion": "1.08",
+        "userIdentity": {
+            "type": "AssumedRole",
+            "principalId": "AROAEXAMPLE:leo",
+            "arn": "arn:aws:sts::123412341234:assumed-role/me/leo",
+            "accountId": "123412341234",
+            "accessKeyId": "ASIAEXAMPLE",
+            "sessionContext": {
+                "sessionIssuer": {
+                    "type": "Role",
+                    "principalId": "AROAEXAMPLE",
+                    "arn": "arn:aws:iam::123412341234:role/me",
+                    "accountId": "123412341234",
+                    "userName": "me"
+                },
+                "webIdFederationData": {},
+                "attributes": {
+                    "creationDate": "2023-07-11T14:14:08Z",
+                    "mfaAuthenticated": "false"
+                }
+            }
+        },
+        "eventTime": "2023-07-11T18:54:08Z",
+        "eventSource": "iam.amazonaws.com",
+        "eventName": "PutRolePolicy",
+        "awsRegion": "us-east-1",
+        "sourceIPAddress": "11.22.33.44",
+        "userAgent": "AWS Internal",
+        "requestParameters": {
+            "roleName": "test-create-role",
+            "policyDocument": "{\n\t\"Version\": \"2012-10-17\",\n\t\"Statement\": [\n\t\t{\n\t\t\t\"Sid\": \"VisualEditor0\",\n\t\t\t\"Effect\": \"Allow\",\n\t\t\t\"Action\": \"access-analyzer:ValidatePolicy\",\n\t\t\t\"Resource\": \"*\"\n\t\t}\n\t]\n}",
+            "policyName": "test-inline2"
+        },
+        "responseElements": null,
+        "requestID": "812a82d7-1234-1234-1234-9c89dd1af3b1",
+        "eventID": "3ca4b577-1234-1234-1234-6e69bf4fd72a",
+        "readOnly": false,
+        "eventType": "AwsApiCall",
+        "managementEvent": true,
+        "recipientAccountId": "123412341234",
+        "eventCategory": "Management",
+        "sessionCredentialFromConsole": "true"
+    }
+}
