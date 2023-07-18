@@ -1,7 +1,7 @@
 ## Validate IAM policy and/or role and notify in case of findings
 
 This project creates Lambda function that automatically validates policy document defined when a policy or role is created or updated.  
-Use cases include be notified when a policy contains error or security warnings. For example when it is created via infrastructure as code (IaC).  
+Use cases include be notified when a policy contains error or security warnings. For example, when it is created via infrastructure as code (IaC).  
 The resources are created or updated in the region where the CloudFormation stack is created.
 
 ## Overview
@@ -91,7 +91,7 @@ aws cloudformation validate-template --template-body file://cloudformation/templ
 At this point it will create Lambda function with a dummy code.  
 You will update it later.
 
-Change the command to add the e-mail you want to rewceive notification. You MUST have access to this e-mail, as you will need to confirm subscription.
+Change the command to add the e-mail you want to receive notification. You MUST have access to this e-mail, as you will need to confirm subscription.
 
 ```bash
 aws cloudformation create-stack --stack-name "${CFN_STACK_NAME}" \
