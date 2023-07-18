@@ -3,7 +3,6 @@ Validate IAM policy using Access Analyzer when customer creates policy and/or ch
 It is trigged by EventBridge rule.
 """
 
-
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
 
@@ -55,7 +54,6 @@ else:
     logging.basicConfig(level=LOG_LEVEL)
 
 
-SNS_TOPIC_ARN = os.getenv('SNS_TOPIC_ARN', '')
 if not (SNS_TOPIC_ARN := os.getenv('SNS_TOPIC_ARN', '')):
     logging.error('SNS_TOPIC_ARN environment variable not set, it will validate policy but will NOT send notification!')
 
@@ -90,25 +88,20 @@ def validate_policy(client: Any, policy_document: str, policy_type: str, resourc
     while True:
         if CONST_FINDINGS in response:
             for finding in response[CONST_FINDINGS]:
+                # Only add findingType's that are desired by CONST_FINDING_TYPE variable
                 if finding['findingType'] in CONST_FINDING_TYPE:
                     findings.append(finding)
 
-        if CONST_NEXT_TOKEN in response:
-            kwargs = {
-                'policyDocument': policy_document,
-                'locale': locale,
-                'policyType': policy_type,
-                'nextToken': response[CONST_NEXT_TOKEN]
-            }
-            if resource_type:
-                kwargs['validatePolicyResourceType'] = resource_type
-
-            logging.info('Found nextToken, validate policy again, get next findings')
-            response = client.validate_policy(**kwargs)
-            logging.info('Found nextToken, validate policy again, got next findings')
-            logging.debug('Response: %s', response)
-        else:
+        if not CONST_NEXT_TOKEN in response:
             break
+
+        # As there is a nextToken it needs to perform function call again
+        kwargs['nextToken'] = response[CONST_NEXT_TOKEN]
+
+        logging.info('Found nextToken, validate policy again, get next findings')
+        response = client.validate_policy(**kwargs)
+        logging.info('Found nextToken, validate policy again, got next findings')
+        logging.debug('Response: %s', response)
 
     #print(findings)
     findings.sort(key=lambda x: x['findingType'])
@@ -277,6 +270,13 @@ class IAMEvent(NamedTuple):
     validate_function: Callable
     message_function: Callable
 
+# Match CloudTrail events with validate and message functions,
+# for every new CloudTrail event add a new IAMEvent with dedicated
+# functions to validate and message the policy.
+# It is case-sensitive, so the event name must match exactly the one from CloudTrail.
+# The event name is the key in the ALL_EVENTS dict.
+# The validate_function is called with the event detail.
+# The message_function is called with the event detail and the findings.
 ALL_EVENTS: dict[str, IAMEvent] = {
     'CreatePolicy': IAMEvent(validate_create_policy, message_create_policy),
     'CreatePolicyVersion': IAMEvent(validate_create_policy_version, message_create_policy_version),
@@ -299,30 +299,31 @@ def lambda_handler(event, context):
 
     return_value: dict[str, str] = {}
     findings: list[Any] = []
+
+    if CONST_DETAIL not in event:
+        logging.warning('Detail not found. It is expecting an event from CloudTrail. Nothing to do.')
+        return False
+
+    event_detail: dict[str, Any] = event['detail']
+    if CONST_ERROR_CODE in event_detail:
+        error_code: str = event_detail['errorCode']
+        error_message: str = event_detail['errorMessage']
+        logging.info('Error %s found. Nothing to do.', error_code)
+        logging.info('Error message: %s', error_message)
+        return False
+
+    if CONST_EVENT_NAME not in event_detail:
+        logging.warning('Event name not found. It is expecting an event from CloudTrail. Nothing to do.')
+        return False
+
+    event_name: str = event_detail['eventName']
+    logging.info('Event: %s', event_name)
+
+    if event_name not in ALL_EVENTS:
+        logging.warning('Event not supported. It is expecting one of %s', ALL_EVENTS.keys())
+        return False
+
     try:
-        if CONST_DETAIL not in event:
-            logging.warning('Detail not found. It is expecting an event from CloudTrail. Nothing to do.')
-            return False
-
-        event_detail: dict[str, Any] = event['detail']
-        if CONST_ERROR_CODE in event_detail:
-            error_code: str = event_detail['errorCode']
-            error_message: str = event_detail['errorMessage']
-            logging.info('Error %s found. Nothing to do.', error_code)
-            logging.info('Error message: %s', error_message)
-            return False
-
-        if CONST_EVENT_NAME not in event_detail:
-            logging.warning('Event name not found. It is expecting an event from CloudTrail. Nothing to do.')
-            return False
-
-        event_name: str = event_detail['eventName']
-        logging.info('Event: %s', event_name)
-
-        if event_name not in ALL_EVENTS:
-            logging.warning('Event not supported. It is expecting one of %s', ALL_EVENTS.keys())
-            return False
-
         # Call the function
         findings = ALL_EVENTS[event_name].validate_function(event_detail)
 
@@ -349,30 +350,30 @@ def lambda_handler(event, context):
     return return_value
 
 # Used to run and validate lambda locally
-class LambdaContext(NamedTuple):
-    """Lambda context to mimic AWS Lambda context"""
-    aws_request_id: str
-    log_group_name: str
-    log_stream_name: str
-    function_name: str
-    memory_limit_in_mb: int
-    function_version: str
-    invoked_function_arn: str
-    client_context: Any
-    identity: Any
+# class LambdaContext(NamedTuple):
+#     """Lambda context to mimic AWS Lambda context"""
+#     aws_request_id: str
+#     log_group_name: str
+#     log_stream_name: str
+#     function_name: str
+#     memory_limit_in_mb: int
+#     function_version: str
+#     invoked_function_arn: str
+#     client_context: Any
+#     identity: Any
 
-if __name__ == '__main__':
-    context_test = LambdaContext(
-        aws_request_id='1b4daa92-1234-1234-1234-ae023531102b',
-        log_group_name='/aws/lambda/log-event',
-        log_stream_name='2023/07/11/[$LATEST]9ddf03096836450db2ddd916c79677a2',
-        function_name='log-event',
-        memory_limit_in_mb=128,
-        function_version='$LATEST',
-        invoked_function_arn='arn:aws:lambda:us-east-1:123412341234:function:log-event',
-        client_context=None,
-        identity=None
-    )
-    with open('create-policy-version.json', 'r', encoding='utf-8') as event_file:
-        event_test: dict[str, Any] = json.loads(event_file.read())
-        lambda_handler(event_test, context_test)
+# if __name__ == '__main__':
+#     context_test = LambdaContext(
+#         aws_request_id='1b4daa92-1234-1234-1234-ae023531102b',
+#         log_group_name='/aws/lambda/log-event',
+#         log_stream_name='2023/07/11/[$LATEST]9ddf03096836450db2ddd916c79677a2',
+#         function_name='log-event',
+#         memory_limit_in_mb=128,
+#         function_version='$LATEST',
+#         invoked_function_arn='arn:aws:lambda:us-east-1:123412341234:function:log-event',
+#         client_context=None,
+#         identity=None
+#     )
+#     with open('create-policy-version.json', 'r', encoding='utf-8') as event_file:
+#         event_test: dict[str, Any] = json.loads(event_file.read())
+#         lambda_handler(event_test, context_test)
