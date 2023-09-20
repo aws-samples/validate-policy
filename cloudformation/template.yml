@@ -39,7 +39,7 @@ Resources:
       Handler: 'validate_policy.lambda_handler'
       MemorySize: 256
       Role: !GetAtt 'LambdaIamRole.Arn'
-      Runtime: python3.10
+      Runtime: python3.11
       Timeout: 300
       ReservedConcurrentExecutions: 2
       Code:
