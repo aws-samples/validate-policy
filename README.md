@@ -8,7 +8,7 @@ The resources are created or updated in the region where the CloudFormation stac
 
 The CloudFormation template `cloudformation/template.yml` creates a stack with the following resources:
 
-1. AWS Lambda function. The function's code is in `lambda/validate_policy.py` and is written in Python compatible with version 3.10.
+1. AWS Lambda function. The function's code is in `lambda/validate_policy.py` and is written in Python compatible with version 3.12.
 1. Lambda function's execution role.
 1. SNS topic.
 1. SNS subscription for e-mail.
